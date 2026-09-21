@@ -1,0 +1,4 @@
+[submodule ".antigravity/shared"]
+	path = .antigravity/shared
+	url = https://github.com/dkdlqoddi/dev-env-blindspot.git
+	branch = antigravity

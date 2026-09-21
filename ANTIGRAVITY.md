@@ -1,0 +1,1 @@
+@.antigravity/shared/MANDATE.md

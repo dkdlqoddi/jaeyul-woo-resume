@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$ANTIGRAVITY_PROJECT_DIR/.antigravity/shared/hooks/mandate.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
