@@ -151,7 +151,7 @@ def parse_antigravity():
 
     for db in db_files:
         try:
-            con = sqlite3.connect(db)
+            con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
             cur = con.cursor()
             rows = cur.execute("SELECT metadata FROM steps WHERE step_type=15;").fetchall()
             for (meta,) in rows:
@@ -186,6 +186,12 @@ def parse_antigravity():
     }
 
 def main():
+    json_path = None
+    if "--json" in sys.argv:
+        idx = sys.argv.index("--json")
+        if idx + 1 < len(sys.argv):
+            json_path = sys.argv[idx + 1]
+
     print("=" * 72)
     print("  AI Coding Agents Cumulative Token Usage Aggregator")
     print("=" * 72)
@@ -213,6 +219,21 @@ def main():
     print(f"- Pure Generative Output & Reasoning     : {grand_output_tokens:,} (~{grand_output_tokens / 1e6:.1f}M+ tokens)")
     print(f"- Net Input + Output (excl. cache read)   : {grand_pure_tokens:,} (~{grand_pure_tokens / 1e6:.1f}M+ tokens)")
     print("=" * 72)
+
+    if json_path:
+        payload = {
+            "calculated_at": "2026-09-22",
+            "grand_total_context_tokens": grand_total_tokens,
+            "grand_pure_output_tokens": grand_output_tokens,
+            "grand_net_tokens": grand_pure_tokens,
+            "display_total_formatted": f"~{grand_total_tokens / 1e9:.2f}B+ ({grand_total_tokens:,})",
+            "display_output_formatted": f"~{grand_output_tokens / 1e6:.1f}M+ ({grand_output_tokens:,})",
+            "tools": tools,
+        }
+        os.makedirs(os.path.dirname(os.path.abspath(json_path)), exist_ok=True)
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+        print(f"\n[Exported JSON metrics to: {json_path}]")
 
 if __name__ == "__main__":
     main()
